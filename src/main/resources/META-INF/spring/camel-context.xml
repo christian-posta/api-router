@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Copyright 2005-2015 Red Hat, Inc.
+
+     Red Hat licenses this file to you under the Apache License, version
+     2.0 (the "License"); you may not use this file except in compliance
+     with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+     implied.  See the License for the specific language governing
+     permissions and limitations under the License.
+
+-->
+<!-- Configures the Camel Context-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+
+  <bean id="catalog" class="org.example.CatalogBean"/>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <restConfiguration bindingMode="json" component="netty-http" port="8181"/>
+    <rest path="/catalog">
+      <get uri="/category">
+        <to uri="bean:catalog?method=getCategories"/>
+      </get>
+      <get uri="/product">
+        <to uri="bean:catalog?method=getProducts"/>
+      </get>
+      <get uri="/product/price/{i}">
+        <to uri="bean:catalog?method=getPrice"/>
+      </get>
+      <post uri="/order" type="org.example.Order">
+        <to uri="bean:catalog?method=order"/>
+      </post>
+    </rest>
+
+    <route id="order">
+      <from uri="direct:order"/>
+      <log message="Order Received"/>
+      <transform>
+        <constant>Order Accepted!</constant>
+      </transform>
+    </route>
+
+
+  </camelContext>
+
+</beans>

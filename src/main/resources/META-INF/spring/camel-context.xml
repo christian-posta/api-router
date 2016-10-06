@@ -29,7 +29,7 @@
   <bean id="catalog" class="org.example.CatalogBean"/>
 
   <camelContext xmlns="http://camel.apache.org/schema/spring">
-    <restConfiguration bindingMode="json" component="netty-http" port="8181" host="localhost"/>
+    <restConfiguration bindingMode="json" component="netty-http" port="8181"/>
     <rest path="/catalog">
       <get uri="/category">
         <to uri="bean:catalog?method=getCategories"/>
